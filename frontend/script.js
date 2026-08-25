@@ -1,5 +1,5 @@
 // Reemplaza con la URL de tu backend en Render agregando /api al final
-const API_URL = 'https://TU-BACKEND.onrender.com/api'; 
+const API_URL = 'https://tu-backend.onrender.com/api'; 
 
 let carrito = JSON.parse(localStorage.getItem('cart')) || [];
 let productoSeleccionado = null;
