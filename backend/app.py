@@ -10,7 +10,7 @@ database.init_db()
 
 @app.route('/')
 def serve_index():
-    return jsonify({"status": "API de Muebles activa"}), 200
+    return jsonify({"status": "API de Ropa y Moda activa"}), 200
 
 @app.route('/api/productos', methods=['GET'])
 def get_productos():
