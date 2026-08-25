@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VOGUE VAULT | Tienda Oficial</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black: #000000;
+            --white: #ffffff;
+            --gray-bg: #f5f5f5;
+            --gray-light: #e0e0e0;
+            --gray-text: #666666;
+            --red-sale: #d90429;
+            --font-main: 'Inter', sans-serif;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--font-main); }
+        body { background: #fff; color: var(--black); padding-bottom: 80px; }
+
+        .navbar { display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; border-bottom: 1px solid var(--gray-light); position: sticky; top: 0; background: #fff; z-index: 50; }
+        .nav-left { display: flex; align-items: center; gap: 12px; }
+        .brand-logo { font-size: 20px; font-weight: 700; letter-spacing: 2px; cursor: pointer; }
+        .icon-btn { background: none; border: none; cursor: pointer; display: flex; align-items: center; }
+
+        .search-bar-container { display: none; padding: 10px 20px; border-bottom: 1px solid var(--gray-light); background: #fff; }
+        .search-bar-container.open { display: flex; gap: 10px; }
+        .search-bar-container input { flex: 1; padding: 8px 12px; border: 1px solid var(--gray-light); font-size: 12px; }
+
+        .discount-banner { background: #000; color: #fff; display: flex; justify-content: space-around; align-items: center; padding: 12px 10px; font-size: 11px; }
+        .disc-col { text-align: center; display: flex; flex-direction: column; }
+        .disc-col strong { font-size: 18px; }
+        .disc-col span { font-size: 8px; opacity: 0.8; }
+        .disc-divider { width: 1px; height: 25px; background: #444; }
+        .code-badge { background: #fff; color: #000; padding: 6px 12px; border-radius: 20px; font-size: 10px; font-weight: bold; }
+
+        .menu-lateral { position: fixed; top: 0; left: -100%; width: 280px; height: 100%; background: #fff; z-index: 300; transition: 0.3s; padding: 20px; border-right: 1px solid var(--gray-light); }
+        .menu-lateral.open { left: 0; }
+        .menu-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--gray-light); padding-bottom: 10px; margin-bottom: 15px; }
+        .menu-categorias-list button { display: block; width: 100%; text-align: left; padding: 12px 0; border: none; background: none; font-size: 12px; font-weight: 600; cursor: pointer; border-bottom: 1px solid #f0f0f0; }
+
+        .hero-banner { height: 200px; background: url('https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=1200') center/cover; display: flex; align-items: flex-end; padding: 20px; color: #fff; }
+        .hero-overlay h2 { font-size: 22px; font-weight: 700; }
+        .btn-hero { background: #fff; color: #000; border: none; padding: 6px 14px; font-size: 10px; font-weight: bold; margin-top: 5px; cursor: pointer; }
+
+        .categories-carousel-section { padding: 15px; }
+        .categories-carousel-section h3 { font-size: 12px; font-weight: 600; letter-spacing: 1px; margin-bottom: 10px; }
+        .categories-pills { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 5px; }
+        .pill { background: #fff; border: 1px solid var(--gray-light); padding: 8px 16px; border-radius: 20px; font-size: 11px; white-space: nowrap; cursor: pointer; }
+        .pill.active { background: var(--black); color: var(--white); border-color: var(--black); }
+
+        .container { padding: 10px 15px; }
+        .grid-productos { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+        @media (min-width: 768px) { .grid-productos { grid-template-columns: repeat(4, 1fr); } }
+
+        .card-producto { cursor: pointer; position: relative; }
+        .card-producto img { width: 100%; height: 240px; object-fit: cover; background: var(--gray-bg); }
+        .badge-discount { position: absolute; top: 5px; left: 5px; background: var(--red-sale); color: #fff; font-size: 10px; padding: 3px 6px; font-weight: bold; }
+        .card-producto h4 { font-size: 11px; font-weight: 400; margin-top: 8px; color: #333; height: 28px; overflow: hidden; }
+        .price-container { display: flex; gap: 8px; font-size: 12px; margin-top: 4px; }
+        .price-current { font-weight: 600; color: var(--black); }
+        .price-original { text-decoration: line-through; color: var(--gray-text); }
+
+        .color-dots-preview { display: flex; gap: 4px; margin-top: 6px; }
+        .dot-preview { width: 10px; height: 10px; border-radius: 50%; border: 1px solid #ccc; display: inline-block; }
+
+        .product-detail-view, .profile-view { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; z-index: 200; overflow-y: auto; padding: 20px; }
+        .detail-container { display: flex; flex-direction: column; gap: 20px; margin-top: 15px; }
+        @media(min-width: 768px) { .detail-container { flex-direction: row; } .detail-image img { max-width: 400px; } }
+        .detail-image img { width: 100%; max-height: 450px; object-fit: cover; }
+        .selector-group { margin: 15px 0; }
+        .size-options, .color-options { display: flex; gap: 10px; margin-top: 8px; }
+        .size-btn { border: 1px solid var(--gray-light); padding: 8px 14px; background: #fff; cursor: pointer; font-size: 12px; }
+        .size-btn.selected { border-color: #000; background: #000; color: #fff; }
+        
+        .color-circle { width: 26px; height: 26px; border-radius: 50%; border: 2px solid #ccc; cursor: pointer; position: relative; }
+        .color-circle.selected { border-color: #000; transform: scale(1.1); }
+
+        .cart-drawer { position: fixed; right: -100%; top: 0; width: 100%; max-width: 380px; height: 100%; background: #fff; z-index: 300; transition: 0.3s; padding: 20px; display: flex; flex-direction: column; }
+        .cart-drawer.open { right: 0; }
+        .cart-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--gray-light); padding-bottom: 10px; }
+        .discount-progress-container { background: var(--gray-bg); padding: 12px; border-radius: 4px; margin: 10px 0; }
+        .progress-labels { display: flex; justify-content: space-between; font-size: 10px; font-weight: bold; }
+        .progress-bar-bg { background: #e0e0e0; height: 6px; border-radius: 3px; margin: 6px 0; }
+        .progress-bar-fill { background: #000; height: 100%; width: 0%; border-radius: 3px; transition: width 0.3s; }
+        .progress-text { font-size: 10px; text-align: center; }
+        .cart-items { flex: 1; overflow-y: auto; margin: 10px 0; }
+
+        .cart-item-row { display: flex; gap: 10px; margin-bottom: 12px; border-bottom: 1px solid #eee; padding-bottom: 8px; position: relative; }
+        .qty-controls { display: flex; align-items: center; gap: 6px; margin-top: 4px; }
+        .btn-qty { border: 1px solid var(--gray-light); background: #fff; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 12px; cursor: pointer; font-weight: bold; }
+        .btn-remove-item { background: none; border: none; color: var(--red-sale); cursor: pointer; font-size: 14px; position: absolute; right: 0; top: 0; padding: 2px; }
+
+        .checkout-view { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; z-index: 250; padding: 20px; overflow-y: auto; }
+        .checkout-section-title { font-size: 13px; font-weight: 700; margin: 15px 0 10px 0; letter-spacing: 0.5px; border-bottom: 1px solid var(--gray-light); padding-bottom: 5px; }
+        .shipping-details { background: var(--gray-bg); padding: 12px; margin-bottom: 15px; display: flex; flex-direction: column; gap: 8px; }
+        .shipping-details input { padding: 8px; border: 1px solid var(--gray-light); font-size: 12px; background: #fff; }
+
+        .payment-option { display: block; padding: 12px; border: 1px solid var(--gray-light); margin-bottom: 8px; cursor: pointer; font-size: 12px; }
+        .payment-details { background: var(--gray-bg); padding: 10px; margin-bottom: 10px; display: flex; flex-direction: column; gap: 8px; }
+        .payment-details input { padding: 8px; border: 1px solid var(--gray-light); font-size: 12px; background: #fff; }
+        .flex-row { display: flex; gap: 8px; }
+
+        .user-card { background: var(--gray-bg); padding: 15px; margin-top: 15px; display: flex; align-items: center; gap: 15px; }
+        .avatar { width: 50px; height: 50px; background: #000; color: #fff; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; }
+        .order-history-item { border: 1px solid var(--gray-light); padding: 10px; margin-top: 10px; font-size: 12px; }
+
+        /* Barra de navegación inferior corregida */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; border-top: 1px solid var(--gray-light); display: flex; justify-content: space-around; align-items: center; padding: 8px 0; z-index: 100; }
+        .nav-item { background: none; border: none; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; font-size: 10px; color: #777; cursor: pointer; flex: 1; }
+        .nav-item span { line-height: 1; display: block; }
+
+        .btn-checkout, .btn-add-cart, .btn-pay-now, .btn-back { width: 100%; background: #000; color: #fff; border: none; padding: 12px; font-weight: 600; font-size: 11px; letter-spacing: 1px; cursor: pointer; margin-top: 10px; }
+        .btn-back { background: var(--gray-bg); color: #000; width: auto; margin-bottom: 10px; }
+        .text-danger { color: var(--red-sale) !important; }
+    </style>
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="nav-left">
+            <button class="icon-btn" onclick="toggleMenuLateral()">
+                <svg width="22" height="22" viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+            </button>
+            <h1 class="brand-logo" onclick="cargarHome()">VOGUE·VAULT</h1>
+        </div>
+        <div class="nav-right" style="display:flex; gap:12px;">
+            <button class="icon-btn" onclick="toggleSearch()"><svg width="18" height="18" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg></button>
+            <button class="icon-btn" onclick="abrirPerfil()"><svg width="18" height="18" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></button>
+            <button class="icon-btn" onclick="toggleCarrito()"><svg width="18" height="18" viewBox="0 0 24 24"><path d="M18 6h-2c0-2.21-1.79-4-4-4S8 3.79 8 6H6c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-6-2c1.1 0 2 .9 2 2h-4c0-1.1.9-2 2-2zm6 16H6V8h2v2c0 .55.45 1 1 1s1-.45 1-1V8h4v2c0 .55.45 1 1 1s1-.45 1-1V8h2v12z"/></svg></button>
+        </div>
+    </header>
+
+    <div id="search-bar-container" class="search-bar-container">
+        <input type="text" id="input-search" placeholder="Busca tu prenda..." onkeyup="ejecutarBusqueda(event)">
+        <button class="icon-btn" onclick="toggleSearch()">&times;</button>
+    </div>
+
+    <div class="discount-banner">
+        <div class="disc-col"><strong>-30%</strong><span>+$2,999</span></div>
+        <div class="disc-divider"></div>
+        <div class="disc-col"><strong>-25%</strong><span>+$2,699</span></div>
+        <div class="disc-divider"></div>
+        <div class="disc-col"><strong>-20%</strong><span>+$1,299</span></div>
+        <div class="code-badge">CÓDIGO: WOW</div>
+    </div>
+
+    <div id="menu-lateral" class="menu-lateral">
+        <div class="menu-header">
+            <h3>Categorías</h3>
+            <button class="icon-btn" onclick="toggleMenuLateral()">&times;</button>
+        </div>
+        <div class="menu-categorias-list">
+            <button onclick="filtrarYCerrar('Novedades')">NOVEDADES</button>
+            <button onclick="filtrarYCerrar('VV x Anna Sarelly')">VV X ANNA SARELLY</button>
+            <button onclick="filtrarYCerrar('Vestidos')">VESTIDOS</button>
+            <button onclick="filtrarYCerrar('Tops')">TOPS</button>
+            <button onclick="filtrarYCerrar('Rebajas')" class="text-danger">REBAJAS -70%</button>
+            <button onclick="filtrarYCerrar('Conjuntos')">CONJUNTOS</button>
+        </div>
+    </div>
+
+    <main id="main-view">
+        <section class="hero-banner">
+            <div class="hero-overlay">
+                <h2>NOVEDADES</h2>
+                <button class="btn-hero" onclick="filtrarCategoria('Novedades')">VER TODO &rarr;</button>
+            </div>
+        </section>
+
+        <section class="categories-carousel-section">
+            <h3>COMPRA POR CATEGORÍA</h3>
+            <div class="categories-pills">
+                <button class="pill active" onclick="filtrarCategoria('Todos', this)">Todos</button>
+                <button class="pill" onclick="filtrarCategoria('Novedades', this)">Novedades</button>
+                <button class="pill" onclick="filtrarCategoria('VV x Anna Sarelly', this)">VV x Anna Sarelly</button>
+                <button class="pill" onclick="filtrarCategoria('Vestidos', this)">Vestidos</button>
+                <button class="pill" onclick="filtrarCategoria('Tops', this)">Tops</button>
+                <button class="pill" onclick="filtrarCategoria('Rebajas', this)">Rebajas</button>
+                <button class="pill" onclick="filtrarCategoria('Conjuntos', this)">Conjuntos</button>
+            </div>
+        </section>
+
+        <section class="container">
+            <div id="grid-productos" class="grid-productos"></div>
+        </section>
+    </main>
+
+    <div id="product-detail-view" class="product-detail-view" style="display: none;">
+        <button class="btn-back" onclick="cerrarDetalle()">&larr; Volver</button>
+        <div class="detail-container">
+            <div class="detail-image">
+                <img id="detail-img" src="" alt="Producto">
+            </div>
+            <div class="detail-info">
+                <h2 id="detail-title"></h2>
+                <div class="price-container" style="font-size:16px; margin: 10px 0;">
+                    <span id="detail-price" class="price-current"></span>
+                    <span id="detail-old-price" class="price-original"></span>
+                </div>
+
+                <div class="selector-group">
+                    <label style="font-size:12px;">Color: <strong id="color-label">Seleccionar</strong></label>
+                    <div id="color-options" class="color-options"></div>
+                </div>
+
+                <div class="selector-group">
+                    <label style="font-size:12px;">Talla Seleccionada:</label>
+                    <div id="size-options" class="size-options"></div>
+                </div>
+
+                <button class="btn-add-cart" onclick="agregarAlCarritoDesdeDetalle()">AGREGAR AL CARRITO</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="profile-view" class="profile-view" style="display: none;">
+        <button class="btn-back" onclick="cerrarPerfil()">&larr; Volver a la Tienda</button>
+        <h2 style="font-size:18px; margin-top:10px;">MI PERFIL</h2>
+        
+        <div class="user-card">
+            <div class="avatar">VIP</div>
+            <div>
+                <strong style="font-size:14px;">Cliente Vanguardia</strong>
+                <p style="font-size:11px; color:#666;">cliente@voguevault.com</p>
+            </div>
+        </div>
+
+        <h3 class="checkout-section-title">MIS PEDIDOS RECIENTES</h3>
+        <div class="order-history-item">
+            <div style="display:flex; justify-content:space-between;">
+                <strong>Pedido #VV-9082</strong>
+                <span class="text-danger" style="font-size:10px;">En camino</span>
+            </div>
+            <p style="color:#666; font-size:10px; margin-top:4px;">1x Blazer Oversized Lino, 1x Top Halter Metálico</p>
+            <strong style="display:block; margin-top:6px;">Total: $2,098.00 MXN</strong>
+        </div>
+
+        <h3 class="checkout-section-title">DIRECCIONES GUARDADAS</h3>
+        <p style="font-size:11px; color:#555;">Av. Principal #450, Col. Centro, C.P. 80000</p>
+    </div>
+
+    <div id="cart-drawer" class="cart-drawer">
+        <div class="cart-header">
+            <h3>BOLSA DE COMPRA</h3>
+            <button class="icon-btn" onclick="toggleCarrito()">&times;</button>
+        </div>
+        <div class="discount-progress-container">
+            <div class="progress-labels">
+                <span>20%</span><span>25%</span><span>30%</span>
+            </div>
+            <div class="progress-bar-bg"><div id="progress-bar-fill" class="progress-bar-fill"></div></div>
+            <p id="discount-progress-text" class="progress-text"></p>
+        </div>
+        <div id="cart-items" class="cart-items"></div>
+        <div class="cart-footer">
+            <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:5px;">
+                <span>Subtotal:</span>
+                <span>$<span id="cart-subtotal">0.00</span></span>
+            </div>
+            <div style="display:flex; justify-content:space-between; font-size:14px; font-weight:bold;">
+                <span>TOTAL:</span>
+                <span>$<span id="cart-total">0.00</span> MXN</span>
+            </div>
+            <button class="btn-checkout" onclick="irAPagar()">IR A PAGAR</button>
+        </div>
+    </div>
+
+    <div id="checkout-view" class="checkout-view" style="display:none;">
+        <button class="btn-back" onclick="cerrarCheckout()">&larr; Regresar</button>
+        <h2 style="font-size:18px; margin-bottom:15px;">FINALIZAR COMPRA</h2>
+
+        <form id="payment-form" onsubmit="procesarPagoFinal(event)">
+            <h3 class="checkout-section-title">DIRECCIÓN DE ENVÍO</h3>
+            <div class="shipping-details">
+                <input type="text" placeholder="Nombre completo" required>
+                <input type="text" placeholder="Calle, número exterior e interior" required>
+                <div class="flex-row">
+                    <input type="text" placeholder="Colonia" required style="flex:1;">
+                    <input type="text" placeholder="Código Postal" required pattern="[0-9]{5}" style="width:100px;">
+                </div>
+                <div class="flex-row">
+                    <input type="text" placeholder="Ciudad / Municipio" required style="flex:1;">
+                    <input type="text" placeholder="Estado" required style="flex:1;">
+                </div>
+                <input type="tel" placeholder="Teléfono de contacto" required pattern="[0-9]{10}">
+            </div>
+
+            <h3 class="checkout-section-title">MÉTODO DE PAGO</h3>
+            <label class="payment-option">
+                <input type="radio" name="payment_method" value="Tarjeta" checked onclick="togglePaymentFields(true)">
+                Tarjeta de crédito/débito
+            </label>
+            <div id="tarjeta-fields" class="payment-details">
+                <input type="text" placeholder="Número de tarjeta" required pattern="[0-9]{16}">
+                <div class="flex-row">
+                    <input type="text" placeholder="MM / AA" required>
+                    <input type="text" placeholder="CVV" required pattern="[0-9]{3,4}">
+                </div>
+                <input type="text" placeholder="Nombre del titular" required>
+            </div>
+
+            <label class="payment-option"><input type="radio" name="payment_method" value="PayPal" onclick="togglePaymentFields(false)"> PayPal</label>
+            <label class="payment-option"><input type="radio" name="payment_method" value="Mercado Pago" onclick="togglePaymentFields(false)"> Mercado Pago</label>
+            <label class="payment-option"><input type="radio" name="payment_method" value="Kueski Pay" onclick="togglePaymentFields(false)"> Kueski Pay</label>
+            <label class="payment-option"><input type="radio" name="payment_method" value="OXXO" onclick="togglePaymentFields(false)"> OXXO</label>
+
+            <button type="submit" class="btn-pay-now">CONFIRMAR Y PAGAR</button>
+        </form>
+    </div>
+
+    <nav class="bottom-nav">
+        <button onclick="cargarHome()" class="nav-item">
+            <svg width="18" height="18" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+            <span>Inicio</span>
+        </button>
+        <button onclick="toggleMenuLateral()" class="nav-item">
+            <svg width="18" height="18" viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg>
+            <span>Categorías</span>
+        </button>
+        <button onclick="abrirPerfil()" class="nav-item">
+            <svg width="18" height="18" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+            <span>Perfil</span>
+        </button>
+        <button onclick="toggleCarrito()" class="nav-item">
+            <svg width="18" height="18" viewBox="0 0 24 24"><path d="M18 6h-2c0-2.21-1.79-4-4-4S8 3.79 8 6H6c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
+            <span>Carrito</span>
+        </button>
+    </nav>
+
+    <script>
+        const colorPalette = {
+            "Negro": "#000000",
+            "Blanco": "#ffffff",
+            "Beige": "#f5f5dc",
+            "Rojo": "#d90429",
+            "Azul": "#1d3557",
+            "Verde": "#2a9d8f",
+            "Rosa": "#ffb703"
+        };
+
+        const productosDB = [
+            { id: 101, categoria: "Novedades", nombre: "Blazer Oversized Lino", precio: 1299, precio_original: 1599, descuento: 18, imagen: "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=500", tallas: "XS, S, M, L", colores: ["Beige", "Negro", "Blanco"] },
+            { id: 102, categoria: "Novedades", nombre: "Vestido Satín Midi Esmaltado", precio: 999, precio_original: 1299, descuento: 23, imagen: "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=500", tallas: "S, M, L", colores: ["Rojo", "Negro"] },
+            { id: 103, categoria: "Novedades", nombre: "Top Asimétrico Drapeado", precio: 599, precio_original: null, descuento: 0, imagen: "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=500", tallas: "XS, S, M", colores: ["Blanco", "Negro", "Verde"] },
+            { id: 104, categoria: "Novedades", nombre: "Pantalón Tailored Wide Leg", precio: 1199, precio_original: 1399, descuento: 14, imagen: "https://images.unsplash.com/photo-1509631179647-0177331693ae?w=500", tallas: "S, M, L, XL", colores: ["Negro", "Beige"] },
+            { id: 105, categoria: "Novedades", nombre: "Chamarra Efecto Piel Biker", precio: 1699, precio_original: 1999, descuento: 15, imagen: "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=500", tallas: "S, M, L", colores: ["Negro"] },
+            { id: 106, categoria: "Novedades", nombre: "Falda Paracaídas Utilitaria", precio: 799, precio_original: null, descuento: 0, imagen: "https://images.unsplash.com/photo-1583496661160-fb5886a0aaaa?w=500", tallas: "XS, S, M", colores: ["Verde", "Negro"] },
+            { id: 107, categoria: "Novedades", nombre: "Corset Estructurado Denim", precio: 699, precio_original: 899, descuento: 22, imagen: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=500", tallas: "S, M", colores: ["Azul"] },
+            { id: 108, categoria: "Novedades", nombre: "Gabardina Ligera Trench", precio: 1899, precio_original: null, descuento: 0, imagen: "https://images.unsplash.com/photo-1544441893-675973e31985?w=500", tallas: "S, M, L", colores: ["Beige", "Negro"] },
+            { id: 109, categoria: "Novedades", nombre: "Suéter Tejido Open Knit", precio: 849, precio_original: 999, descuento: 15, imagen: "https://images.unsplash.com/photo-1576995853123-5a10305d93c0?w=500", tallas: "CH, M, G", colores: ["Blanco", "Rosa"] },
+            { id: 110, categoria: "Novedades", nombre: "Cargo Pants Baggy", precio: 1099, precio_original: null, descuento: 0, imagen: "https://images.unsplash.com/photo-1517445312882-bc9910d016b7?w=500", tallas: "XS, S, M, L", colores: ["Negro", "Verde"] },
+
+            { id: 201, categoria: "VV x Anna Sarelly", nombre: "Vestido Sarelly Red Cut-Out", precio: 1499, precio_original: 1899, descuento: 21, imagen: "https://images.unsplash.com/photo-1566174053879-31528523f8ae?w=500", tallas: "S, M, L", colores: ["Rojo", "Negro"] },
+            { id: 202, categoria: "VV x Anna Sarelly", nombre: "Blazer Capsule Monogram", precio: 1899, precio_original: null, descuento: 0, imagen: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500", tallas: "XS, S, M", colores: ["Negro"] },
+            { id: 203, categoria: "VV x Anna Sarelly", nombre: "Top Halter Metálico", precio: 799, precio_original: 999, descuento: 20, imagen: "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=500", tallas: "S, M", colores: ["Rosa", "Blanco"] },
+            { id: 204, categoria: "VV x Anna Sarelly", nombre: "Pantalón Flare Terciopelo", precio: 1299, precio_original: null, descuento: 0, imagen: "https://images.unsplash.com/photo-1506629082955-511b1aa562c8?w=500", tallas: "S, M, L", colores: ["Negro", "Azul"] },
+            { id: 205, categoria: "VV x Anna Sarelly", nombre: "Body Transparencias Noir", precio: 699, precio_original: 899, descuento: 22, imagen: "https://images.unsplash.com/photo-1502716119720-b23a93e5fe1b?w=500", tallas: "XS, S, M", colores: ["Negro"] },
+            { id: 206, categoria: "VV x Anna Sarelly", nombre: "Falda Vinilo Tube", precio: 899, precio_original: 1199, descuento: 25, imagen: "https://images.unsplash.com/photo-1582142839970-2b937648405c?w=500", tallas: "S, M", colores: ["Negro", "Rojo"] },
+            { id: 207, categoria: "VV x Anna Sarelly", nombre: "Abrigo Faux Fur Icon", precio: 2499, precio_original: 2999, descuento: 16, imagen: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=500", tallas: "S, M", colores: ["Beige", "Negro"] },
+            { id: 208, categoria: "VV x Anna Sarelly", nombre: "Crop Top Asimétrico Velvet", precio: 649, precio_original: null, descuento: 0, imagen: "https://images.unsplash.com/photo-1485230895905-ec40ba36b9bc?w=500", tallas: "XS, S, M", colores: ["Negro", "Rojo"] },
+            { id: 209, categoria: "VV x Anna Sarelly", nombre: "Conjunto Sastre Edición Especial", precio: 2199, precio_original: 2599, descuento: 15, imagen: "https://images.unsplash.com/photo-1487222477894-8943e31ef7b2?w=500", tallas: "S, M, L", colores: ["Blanco", "Negro"] },
+            { id: 210, categoria: "VV x Anna Sarelly", nombre: "Maxidress Espalda Descubierta", precio: 1599, precio_original: null, descuento: 0, imagen: "https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=500", tallas: "S, M", colores: ["Negro", "Verde"] },
+
+            { id: 301, categoria: "Vestidos", nombre: "Vestido Largo Floral Primavera", precio: 899, precio_original: 1199, descuento: 25, imagen: "https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=500", tallas: "XS, S, M, L", colores: ["Rosa", "Blanco"] },
+            { id: 302, categoria: "Vestidos", nombre: "Little Black Dress Ajustado", precio: 749, precio_original: null, descuento: 0, imagen: "https://images.unsplash.com/photo-1539008835657-9e8e9680c956?w=500", tallas: "S, M, L", colores: ["Negro"] },
+            { id: 303, categoria: "Vestidos", nombre: "Vestido Camisero Satinado", precio: 950, precio_original: 1200, descuento: 20, imagen: "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=500", tallas: "S, M, L, XL", colores: ["Beige", "Verde"] },
+            { id: 304, categoria: "Vestidos", nombre: "Vestido Midi Tejido Rib", precio: 699, precio_original: null, descuento: 0, imagen: "https://images.unsplash.com/photo-1492707892479-7bc8d5a4ee93?w=500", tallas: "CH, M, G", colores: ["Negro", "Beige"] },
+            { id: 305, categoria: "Vestidos", nombre: "Vestido Fiesta Lentejuelas Gold", precio: 1799, precio_original: 2199, descuento: 18, imagen: "https://images.unsplash.com/photo-1568252542512-9fe8fe9c87bb?w=500", tallas: "S, M", colores: ["Rosa", "Negro"] },
+            { id: 306, categoria: "Vestidos", nombre: "Vestido Blazer Ejecutivo", precio: 1399, precio_original: null, descuento: 0, imagen: "https://images.unsplash.com/photo-1581044777550-4cfa60707c03?w=500", tallas: "S, M, L", colores: ["Negro", "Blanco"] },
+            { id: 307, categoria: "Vestidos", nombre: "Vestido Boho Escote V", precio: 849, precio_original: 999, descuento: 15, imagen: "https://images.unsplash.com/photo-1612423284934-2850a4ea6b0f?w=500", tallas: "S, M, L", colores: ["Blanco", "Beige"] },
+            { id: 308, categoria: "Vestidos", nombre: "Vestido Corto Mangas Abultadas", precio: 799, precio_original: null, descuento: 0, imagen: "https://images.unsplash.com/photo-1525507119028-ed4c629a60a3?w=500", tallas: "XS, S, M", colores: ["Rosa", "Blanco"] },
+            { id: 309, categoria: "Vestidos", nombre: "Vestido Tubo Minimalista", precio: 629, precio_original: 899, descuento: 30, imagen: "https://images.unsplash.com/photo-1502716119720-b23a93e5fe1b?w=500", tallas: "S, M, L", colores: ["Negro", "Rojo"] },
+            { id: 310, categoria: "Vestidos", nombre: "Vestido Slip Dress Seda", precio: 1120, precio_original: null, descuento: 0, imagen: "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=500", tallas: "XS, S, M", colores: ["Verde", "Negro"] },
+
+            { id: 401, categoria: "Tops", nombre: "Crop Top Básico Algodón", precio: 299, precio_original: null, descuento: 0, imagen: "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=500", tallas: "XS, S, M, L", colores: ["Blanco", "Negro", "Beige"] },
+            { id: 402, categoria: "Tops", nombre: "Blusa Satén Cuello Halter", precio: 499, precio_original: 699, descuento: 28, imagen: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=500", tallas: "S, M, L", colores: ["Verde", "Negro"] },
+            { id: 403, categoria: "Tops", nombre: "Top Korset Malla Transparente", precio: 549, precio_original: null, descuento: 0, imagen: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=500", tallas: "XS, S, M", colores: ["Negro", "Rojo"] },
+            { id: 404, categoria: "Tops", nombre: "Camisa Oversized Encarrujada", precio: 699, precio_original: 899, descuento: 22, imagen: "https://images.unsplash.com/photo-1598554747436-c9293d6a588f?w=500", tallas: "S, M, L", colores: ["Blanco", "Azul"] },
+            { id: 405, categoria: "Tops", nombre: "Top Tejido Un Hombro", precio: 429, precio_original: null, descuento: 0, imagen: "https://images.unsplash.com/photo-1485230895905-ec40ba36b9bc?w=500", tallas: "CH, M", colores: ["Beige", "Negro"] },
+            { id: 406, categoria: "Tops", nombre: "Blusa Encaje Romántica", precio: 599, precio_original: 750, descuento: 20, imagen: "https://images.unsplash.com/photo-1564584217132-2271feaeb3c5?w=500", tallas: "S, M, L", colores: ["Blanco"] },
+            { id: 407, categoria: "Tops", nombre: "Top Strapless Efecto Piel", precio: 480, precio_original: null, descuento: 0, imagen: "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=500", tallas: "XS, S, M", colores: ["Negro"] },
+            { id: 408, categoria: "Tops", nombre: "Tank Top Rib Acanalado", precio: 349, precio_original: 449, descuento: 22, imagen: "https://images.unsplash.com/photo-1503341455253-b2e723bb3dbb?w=500", tallas: "S, M, L", colores: ["Blanco", "Negro", "Verde"] },
+            { id: 409, categoria: "Tops", nombre: "Blusa Popelina Mangas Globo", precio: 680, precio_original: null, descuento: 0, imagen: "https://images.unsplash.com/photo-1551803091-e20673f15770?w=500", tallas: "S, M", colores: ["Blanco", "Rosa"] },
+            { id: 410, categoria: "Tops", nombre: "Top Estampado Zebra Flow", precio: 399, precio_original: 599, descuento: 33, imagen: "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=500", tallas: "XS, S, M", colores: ["Negro", "Blanco"] },
+
+            { id: 501, categoria: "Rebajas", nombre: "Pantalón Skinny High Waist", precio: 399, precio_original: 999, descuento: 60, imagen: "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=500", tallas: "24, 26, 28", colores: ["Azul", "Negro"] },
+            { id: 502, categoria: "Rebajas", nombre: "Chamarra Mezclilla Destroyed", precio: 499, precio_original: 1299, descuento: 61, imagen: "https://images.unsplash.com/photo-1576995853123-5a10305d93c0?w=500", tallas: "S, M", colores: ["Azul"] },
+            { id: 503, categoria: "Rebajas", nombre: "Vestido Playero Ajustable", precio: 299, precio_original: 899, descuento: 66, imagen: "https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=500", tallas: "XS, S", colores: ["Blanco", "Rosa"] },
+            { id: 504, categoria: "Rebajas", nombre: "Suéter Ligero Cuello V", precio: 350, precio_original: 850, descuento: 58, imagen: "https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=500", tallas: "M, L", colores: ["Beige", "Verde"] },
+            { id: 505, categoria: "Rebajas", nombre: "Falda Plisada Metalizada", precio: 320, precio_original: 999, descuento: 67, imagen: "https://images.unsplash.com/photo-1583496661160-fb5886a0aaaa?w=500", tallas: "S, M", colores: ["Rosa", "Negro"] },
+            { id: 506, categoria: "Rebajas", nombre: "Blusa Borde Festoneado", precio: 220, precio_original: 699, descuento: 68, imagen: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=500", tallas: "XS, S", colores: ["Blanco"] },
+            { id: 507, categoria: "Rebajas", nombre: "Short Sastre Pinzas", precio: 280, precio_original: 799, descuento: 64, imagen: "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=500", tallas: "S, M", colores: ["Beige", "Negro"] },
+            { id: 508, categoria: "Rebajas", nombre: "Kimono Largo Estampado", precio: 399, precio_original: 1199, descuento: 66, imagen: "https://images.unsplash.com/photo-1612423284934-2850a4ea6b0f?w=500", tallas: "Única", colores: ["Verde", "Rosa"] },
+            { id: 509, categoria: "Rebajas", nombre: "Top Asimétrico Lentejuela", precio: 250, precio_original: 800, descuento: 68, imagen: "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=500", tallas: "S", colores: ["Negro"] },
+            { id: 510, categoria: "Rebajas", nombre: "Pantalón Jogger Satén", precio: 380, precio_original: 950, descuento: 60, imagen: "https://images.unsplash.com/photo-1506629082955-511b1aa562c8?w=500", tallas: "S, M, L", colores: ["Negro", "Beige"] },
+
+            { id: 601, categoria: "Conjuntos", nombre: "Set Sastre Blazer y Short", precio: 1599, precio_original: 1999, descuento: 20, imagen: "https://images.unsplash.com/photo-1487222477894-8943e31ef7b2?w=500", tallas: "S, M, L", colores: ["Blanco", "Beige"] },
+            { id: 602, categoria: "Conjuntos", nombre: "Set 2 Piezas Knit Top y Falda", precio: 1199, precio_original: null, descuento: 0, imagen: "https://images.unsplash.com/photo-1509631179647-0177331693ae?w=500", tallas: "XS, S, M", colores: ["Beige", "Negro"] },
+            { id: 603, categoria: "Conjuntos", nombre: "Set Deportivo Seamless Ultra", precio: 899, precio_original: 1199, descuento: 25, imagen: "https://images.unsplash.com/photo-1518310383802-640c2de311b2?w=500", tallas: "S, M, L", colores: ["Negro", "Rosa", "Verde"] },
+            { id: 604, categoria: "Conjuntos", nombre: "Conjunto Lino Blusa y Pantalón", precio: 1699, precio_original: 1999, descuento: 15, imagen: "https://images.unsplash.com/photo-1544441893-675973e31985?w=500", tallas: "S, M, L", colores: ["Beige", "Blanco"] },
+            { id: 605, categoria: "Conjuntos", nombre: "Set Crop Top y Falda Midi Satén", precio: 1299, precio_original: null, descuento: 0, imagen: "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=500", tallas: "S, M", colores: ["Verde", "Negro"] },
+            { id: 606, categoria: "Conjuntos", nombre: "Set Loungewear Jogger y Hoodie", precio: 999, precio_original: 1299, descuento: 23, imagen: "https://images.unsplash.com/photo-1517445312882-bc9910d016b7?w=500", tallas: "CH, M, G", colores: ["Beige", "Negro"] },
+            { id: 607, categoria: "Conjuntos", nombre: "Set Tweed Estilo Francés", precio: 1899, precio_original: 2299, descuento: 17, imagen: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500", tallas: "S, M", colores: ["Blanco", "Negro"] },
+            { id: 608, categoria: "Conjuntos", nombre: "Set Chaleco y Pantalón Palazzo", precio: 1499, precio_original: null, descuento: 0, imagen: "https://images.unsplash.com/photo-1581044777550-4cfa60707c03?w=500", tallas: "S, M, L", colores: ["Negro", "Beige"] },
+            { id: 609, categoria: "Conjuntos", nombre: "Set Playero Top Knot y Short", precio: 799, precio_original: 999, descuento: 20, imagen: "https://images.unsplash.com/photo-1525507119028-ed4c629a60a3?w=500", tallas: "XS, S, M", colores: ["Blanco", "Rosa"] },
+            { id: 610, categoria: "Conjuntos", nombre: "Set Monocromático Rib Knit", precio: 1099, precio_original: null, descuento: 0, imagen: "https://images.unsplash.com/photo-1492707892479-7bc8d5a4ee93?w=500", tallas: "S, M, L", colores: ["Beige", "Negro"] }
+        ];
+
+        let carrito = JSON.parse(localStorage.getItem('cart')) || [];
+        let productoSeleccionado = null;
+        let tallaSeleccionada = null;
+        let colorSeleccionado = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            cargarProductos('Todos');
+            actualizarCarritoUI();
+        });
+
+        function cargarProductos(categoria = '') {
+            let filtrados = productosDB;
+            if (categoria && categoria !== 'Todos') {
+                filtrados = productosDB.filter(p => p.categoria.toLowerCase() === categoria.toLowerCase());
+            }
+            
+            const container = document.getElementById('grid-productos');
+            container.innerHTML = filtrados.map(p => `
+                <div class="card-producto" onclick="abrirDetalle(${p.id})">
+                    ${p.descuento > 0 ? `<span class="badge-discount">-${p.descuento}%</span>` : ''}
+                    <img src="${p.imagen}" alt="${p.nombre}">
+                    <h4>${p.nombre}</h4>
+                    <div class="price-container">
+                        <span class="price-current">$${p.precio.toFixed(2)}</span>
+                        ${p.precio_original ? `<span class="price-original">$${p.precio_original.toFixed(2)}</span>` : ''}
+                    </div>
+                    <div class="color-dots-preview">
+                        ${p.colores ? p.colores.map(c => `<span class="dot-preview" style="background-color: ${colorPalette[c] || '#ccc'}"></span>`).join('') : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filtrarCategoria(cat, btn) {
+            if (btn) {
+                document.querySelectorAll('.pill').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            }
+            cargarProductos(cat);
+        }
+
+        function filtrarYCerrar(cat) {
+            filtrarCategoria(cat, null);
+            toggleMenuLateral();
+        }
+
+        function toggleSearch() {
+            document.getElementById('search-bar-container').classList.toggle('open');
+        }
+
+        function ejecutarBusqueda(e) {
+            const q = e.target.value.toLowerCase();
+            const filtrados = productosDB.filter(p => p.nombre.toLowerCase().includes(q) || p.categoria.toLowerCase().includes(q));
+            
+            const container = document.getElementById('grid-productos');
+            container.innerHTML = filtrados.map(p => `
+                <div class="card-producto" onclick="abrirDetalle(${p.id})">
+                    ${p.descuento > 0 ? `<span class="badge-discount">-${p.descuento}%</span>` : ''}
+                    <img src="${p.imagen}">
+                    <h4>${p.nombre}</h4>
+                    <div class="price-container">
+                        <span class="price-current">$${p.precio.toFixed(2)}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function abrirDetalle(id) {
+            productoSeleccionado = productosDB.find(p => p.id === id);
+            if (!productoSeleccionado) return;
+            
+            document.getElementById('detail-img').src = productoSeleccionado.imagen;
+            document.getElementById('detail-title').innerText = productoSeleccionado.nombre;
+            document.getElementById('detail-price').innerText = `$${productoSeleccionado.precio.toFixed(2)} MXN`;
+            document.getElementById('detail-old-price').innerText = productoSeleccionado.precio_original ? `$${productoSeleccionado.precio_original.toFixed(2)}` : '';
+
+            const tallas = productoSeleccionado.tallas ? productoSeleccionado.tallas.split(',') : ['S', 'M', 'L'];
+            const sizeContainer = document.getElementById('size-options');
+            sizeContainer.innerHTML = tallas.map(t => `<button class="size-btn" onclick="seleccionarTalla('${t.trim()}', this)">${t.trim()}</button>`).join('');
+
+            const colorContainer = document.getElementById('color-options');
+            colorContainer.innerHTML = productoSeleccionado.colores.map(c => `
+                <div class="color-circle" style="background-color: ${colorPalette[c] || '#ccc'}" title="${c}" onclick="seleccionarColor('${c}', this)"></div>
+            `).join('');
+
+            tallaSeleccionada = null;
+            colorSeleccionado = null;
+            document.getElementById('color-label').innerText = "Seleccionar";
+            document.getElementById('product-detail-view').style.display = 'block';
+        }
+
+        function seleccionarTalla(talla, elem) {
+            tallaSeleccionada = talla;
+            document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('selected'));
+            elem.classList.add('selected');
+        }
+
+        function seleccionarColor(color, elem) {
+            colorSeleccionado = color;
+            document.getElementById('color-label').innerText = color;
+            document.querySelectorAll('.color-circle').forEach(b => b.classList.remove('selected'));
+            elem.classList.add('selected');
+        }
+
+        function agregarAlCarritoDesdeDetalle() {
+            if (!colorSeleccionado) return alert("Por favor selecciona un color");
+            if (!tallaSeleccionada) return alert("Por favor selecciona una talla");
+            
+            const existe = carrito.find(i => i.id === productoSeleccionado.id && i.talla === tallaSeleccionada && i.color === colorSeleccionado);
+            if (existe) {
+                existe.cantidad += 1;
+            } else {
+                carrito.push({
+                    id: productoSeleccionado.id,
+                    nombre: productoSeleccionado.nombre,
+                    precio: productoSeleccionado.precio,
+                    talla: tallaSeleccionada,
+                    color: colorSeleccionado,
+                    imagen: productoSeleccionado.imagen,
+                    cantidad: 1
+                });
+            }
+            guardarYActualizarCarrito();
+            cerrarDetalle();
+            toggleCarrito();
+        }
+
+        function cambiarCantidad(index, cambio) {
+            carrito[index].cantidad += cambio;
+            if (carrito[index].cantidad <= 0) {
+                carrito.splice(index, 1);
+            }
+            guardarYActualizarCarrito();
+        }
+
+        function eliminarDelCarrito(index) {
+            carrito.splice(index, 1);
+            guardarYActualizarCarrito();
+        }
+
+        function guardarYActualizarCarrito() {
+            localStorage.setItem('cart', JSON.stringify(carrito));
+            actualizarCarritoUI();
+        }
+
+        function actualizarCarritoUI() {
+            const total = carrito.reduce((sum, item) => sum + (item.precio * item.cantidad), 0);
+            document.getElementById('cart-subtotal').innerText = total.toFixed(2);
+
+            let descPct = 0;
+            if (total >= 2999) descPct = 0.30;
+            else if (total >= 2699) descPct = 0.25;
+            else if (total >= 1299) descPct = 0.20;
+
+            const descuento = total * descPct;
+            const totalFinal = total - descuento;
+
+            const progressFill = document.getElementById('progress-bar-fill');
+            const progressText = document.getElementById('discount-progress-text');
+            let pctWidth = Math.min((total / 2999) * 100, 100);
+            progressFill.style.width = `${pctWidth}%`;
+
+            if (total >= 2999) {
+                progressText.innerHTML = "¡Obtienes <strong>30% de descuento</strong>!";
+            } else if (total >= 2699) {
+                progressText.innerHTML = `Agrega <strong>$${(2999 - total).toFixed(2)}</strong> para 30% desc.`;
+            } else if (total >= 1299) {
+                progressText.innerHTML = `Agrega <strong>$${(2699 - total).toFixed(2)}</strong> para 25% desc.`;
+            } else {
+                progressText.innerHTML = `Agrega <strong>$${(1299 - total).toFixed(2)}</strong> para 20% desc.`;
+            }
+
+            document.getElementById('cart-total').innerText = totalFinal.toFixed(2);
+            
+            const cartContainer = document.getElementById('cart-items');
+            if (carrito.length === 0) {
+                cartContainer.innerHTML = '<p style="font-size:12px; color:#666; text-align:center; margin-top:20px;">Tu bolsa está vacía</p>';
+                return;
+            }
+
+            cartContainer.innerHTML = carrito.map((i, index) => `
+                <div class="cart-item-row">
+                    <button class="btn-remove-item" onclick="eliminarDelCarrito(${index})" title="Eliminar artículo">&times;</button>
+                    <img src="${i.imagen}" width="50" height="60" style="object-fit:cover;">
+                    <div style="flex:1;">
+                        <p style="font-size:10px; font-weight:bold; padding-right:15px;">${i.nombre}</p>
+                        <small style="font-size:9px; color:#666;">Color: ${i.color} | Talla: ${i.talla}</small><br>
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
+                            <div class="qty-controls">
+                                <button class="btn-qty" onclick="cambiarCantidad(${index}, -1)">-</button>
+                                <span style="font-size:10px; font-weight:bold;">${i.cantidad}</span>
+                                <button class="btn-qty" onclick="cambiarCantidad(${index}, 1)">+</button>
+                            </div>
+                            <strong style="font-size:11px;">$${(i.precio * i.cantidad).toFixed(2)}</strong>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function toggleCarrito() { document.getElementById('cart-drawer').classList.toggle('open'); }
+        function toggleMenuLateral() { document.getElementById('menu-lateral').classList.toggle('open'); }
+        function cerrarDetalle() { document.getElementById('product-detail-view').style.display = 'none'; }
+        function abrirPerfil() { document.getElementById('profile-view').style.display = 'block'; }
+        function cerrarPerfil() { document.getElementById('profile-view').style.display = 'none'; }
+        function cargarHome() { cerrarDetalle(); cerrarPerfil(); cargarProductos('Todos'); }
+
+        function irAPagar() {
+            if (carrito.length === 0) return alert("Tu carrito está vacío");
+            toggleCarrito();
+            document.getElementById('checkout-view').style.display = 'block';
+        }
+
+        function cerrarCheckout() { document.getElementById('checkout-view').style.display = 'none'; }
+
+        function togglePaymentFields(showTarjeta) {
+            document.getElementById('tarjeta-fields').style.display = showTarjeta ? 'flex' : 'none';
+        }
+
+        function procesarPagoFinal(e) {
+            e.preventDefault();
+            alert("¡Pago y pedido procesados con éxito! Gracias por tu compra.");
+            carrito = [];
+            localStorage.removeItem('cart');
+            actualizarCarritoUI();
+            cerrarCheckout();
+        }
+    </script>
+</body>
+</html>
